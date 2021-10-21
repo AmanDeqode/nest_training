@@ -6,8 +6,8 @@ export class Todo {
     @PrimaryGeneratedColumn()
     id:string;
 
-    @Column({type:'varchar',nullable:false})
-    tasks:string;
+    @Column('simple-array',{nullable:false})
+    tasks:string[];
 
     @ManyToOne('User', (user:User) => user.tasks)
     @JoinColumn({name:'user_id'})
