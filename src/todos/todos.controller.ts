@@ -1,0 +1,27 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, UseGuards, Request } from '@nestjs/common';
+import { TodosService } from './todos.service';
+import { CreateTodoDto } from './dto/create-todo.dto';
+import { Todo } from './entities/todo.entity';
+import { JwtAuthGuard } from 'src/users/auth/jwt-auth.guard';
+
+@UseGuards(JwtAuthGuard)
+@Controller('todos')
+export class TodosController {
+  @Inject()
+  todosService:TodosService;
+  //constructor(private readonly todosService: TodosService) {}
+  @Post()
+  createTodo(@Body() createTodoDto: CreateTodoDto,@Request() req): Promise<Todo> {
+    const user = req.user;
+    console.log(user);
+    return this.todosService.create(createTodoDto,user.id);
+  }
+  @Get()
+  getTodos(@Request() req) {
+    return this.todosService.findAll(req.user.id);
+  }
+  @Delete(':id')
+  removeTodo(@Param('id') id: string) {
+    return this.todosService.remove(+id);
+  }
+}
