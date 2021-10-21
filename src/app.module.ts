@@ -6,7 +6,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TodosModule } from './todos/todos.module';
 import { UsersModule } from './users/users.module';
-import { JwtModule } from '@nestjs/jwt';
 import { User } from './users/entities/user.entity';
 import { Todo } from './todos/entities/todo.entity';
 
@@ -22,11 +21,6 @@ import { Todo } from './todos/entities/todo.entity';
     autoLoadEntities:true,
     synchronize:true,
   }),
-  JwtModule.register({
-    secret: process.env.SECRETKEY, signOptions:{
-        expiresIn: process.env.EXPIRESIN
-    }
-}),
 UsersModule,
 TodosModule,
 ],
