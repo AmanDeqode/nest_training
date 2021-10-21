@@ -21,7 +21,7 @@ export class UsersController {
   @Post('/login')
   async login(@Body() loginUserDto: LoginUserDto) {
     const user = await this.usersService.login(loginUserDto);
-    const payload = {name:user.name,sub:user.id}
+    const payload = {name:user.name,sub:user.id,role:user.role}
     return {
       access_token:this.jwtService.sign(payload)
     };
