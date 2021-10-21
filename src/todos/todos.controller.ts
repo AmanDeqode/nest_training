@@ -13,7 +13,6 @@ export class TodosController {
   @Post()
   createTodo(@Body() createTodoDto: CreateTodoDto,@Request() req): Promise<Todo> {
     const user = req.user;
-    console.log(user);
     return this.todosService.create(createTodoDto,user.id);
   }
   @Get()
