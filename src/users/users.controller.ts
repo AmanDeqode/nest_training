@@ -33,10 +33,14 @@ export class UsersController {
   getUsers() {
     return this.usersService.findAll();
   }
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard,RolesGuard)
   @Get(':id')
   getUser(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard,RolesGuard)
   @Delete(':id')
   removeUser(@Param('id') id: string) {
     return this.usersService.remove(+id);
