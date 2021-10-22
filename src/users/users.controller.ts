@@ -1,31 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, UseGuards } from '@nestjs/common';
+import { Controller, Get,Patch, Param, Delete, UseGuards, Body } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { JwtAuthGuard } from '../auth/authenticate/jwt-auth.guard';
+import { RolesGuard } from '../auth/authenticate/roles.guards';
+import { Roles } from '../auth/authenticate/roles.decorators';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
-import { LoginUserDto } from './dto/login-user.dto';
-import { JwtService } from '@nestjs/jwt';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { RolesGuard } from './auth/roles.guards';
-import { Roles } from './auth/roles.decorators';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService,
-    private jwtService:JwtService
     ) {}
-
-  @Post()
-  async register(@Body() createUserDto: CreateUserDto) :Promise<User> { 
-    return this.usersService.register(createUserDto);
-  }
-  @Post('/login')
-  async login(@Body() loginUserDto: LoginUserDto) {
-    const user = await this.usersService.login(loginUserDto);
-    const payload = {name:user.name,sub:user.id,role:user.role}
-    return {
-      access_token:this.jwtService.sign(payload)
-    };
-  }
   
   @Roles('ADMIN')
   @UseGuards(JwtAuthGuard,RolesGuard)
@@ -39,6 +23,13 @@ export class UsersController {
   getUser(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
+  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard,RolesGuard)
+  @Patch(':id')
+  updateUser(@Param('id') id:string, @Body() createUserDto:CreateUserDto) {
+    return this.usersService.updateUser(+id,createUserDto);
+  }
+
   @Roles('ADMIN')
   @UseGuards(JwtAuthGuard,RolesGuard)
   @Delete(':id')
