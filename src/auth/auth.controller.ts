@@ -12,14 +12,22 @@ export class AuthController {
       ) {}
     @Post('register')
     async register(@Body() createUserDto: CreateUserDto) :Promise<User> { 
-      return this.authService.register(createUserDto);
+      try {
+        return await this.authService.register(createUserDto);
+      } catch (error) {
+        throw new Error(error.message);
+      }
     }
     @Post('login')
     async login(@Body() loginUserDto: LoginUserDto) {
-      const user = await this.authService.login(loginUserDto);
-      const payload = {name:user.name,sub:user.id,role:user.role}
-      return {
-        access_token:this.jwtService.sign(payload)
-      };
+      try {
+        const user = await this.authService.login(loginUserDto);
+        const payload = {name:user.name,sub:user.id,role:user.role}
+        return {
+          access_token:this.jwtService.sign(payload)
+        } 
+      } catch (error) {
+        throw new Error(error.message);
+      }
     }
 }
