@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -10,25 +11,49 @@ export class UsersService {
   userRepository:Repository<User>
 
   async findAll() {
-    const users = await this.userRepository.find();
-    return users;
+    try {
+      const users = await this.userRepository.find();
+      return users;
+
+    } catch (error) {
+      throw new Error(error.messge);
+    }
   }
 
   async findOne(id: number|string) {
-    const user = await this.userRepository.findOne(id);
-    if(!user) throw new NotFoundException(`User for id = ${id} not found`);
-    return user;
+    try {
+      const user = await this.userRepository.findOne(id);
+      if(!user) throw new NotFoundException(`User for id = ${id} not found`);
+      return user; 
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
-  async updateUser(id:number|string, createUserDto:CreateUserDto) {
-    console.log(createUserDto);
-    const user = await this.userRepository.findOne(id)
-    const updateUser = new User();
-
+  async updateUser(id:number|string, updateUserDto:UpdateUserDto) {
+    try {
+      console.log(updateUserDto);
+      console.log(updateUserDto);
+      const user = await this.userRepository.findOne(id)
+      if(updateUserDto.password) {
+        updateUserDto.password = await bcrypt.hash(updateUserDto.password,12);
+      }
+      user.name = updateUserDto.name || user.name;
+      user.email = updateUserDto.email || user.email;
+      user.password = updateUserDto.password|| user.password;
+      user.role = updateUserDto.role || user.role;
+      return await this.userRepository.save(user); 
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   async remove(id: number) {
-    const user = await this.userRepository.findOne(id);
-    return this.userRepository.remove(user);
+    try {
+      const user = await this.userRepository.findOne(id);
+      return this.userRepository.remove(user); 
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 }
