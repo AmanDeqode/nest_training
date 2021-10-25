@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, UseGuards, R
 import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { Todo } from './entities/todo.entity';
-import { JwtAuthGuard } from 'src/auth/authenticate/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/shared/authenticate/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('todo')
@@ -16,11 +16,11 @@ export class TodosController {
     return this.todosService.create(createTodoDto,user.id);
   }
   @Get()
-  getTodos(@Request() req) {
+  getTodos(@Request() req):Promise<Todo> {
     return this.todosService.findAll(req.user.id);
   }
   @Delete(':id')
-  removeTodo(@Param('id') id: string) {
+  removeTodo(@Param('id') id: string):Promise<Todo> {
     return this.todosService.remove(+id);
   }
 }
