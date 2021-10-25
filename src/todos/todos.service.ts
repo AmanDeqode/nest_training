@@ -10,21 +10,34 @@ export class TodosService {
   todoRepository:Repository<Todo>
 
   async create(createTodoDto: CreateTodoDto,user) {
-    const {tasks} = createTodoDto;
-    const todo = new Todo()
-    todo.tasks = tasks
-    todo.user = user
-    await this.todoRepository.save(todo);
-    delete todo.user
-    return todo;
+    try {
+      const {tasks} = createTodoDto;
+      const todo = new Todo();
+      todo.tasks = tasks
+      todo.user = user
+      await this.todoRepository.save(todo);
+      delete todo.user;
+      return todo; 
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   async findAll(userId) {
-    return await this.todoRepository.find();
+    try {
+      const todo = await this.todoRepository.findOne({user: userId});
+      return todo; 
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   async remove(id: number) {
-    const todo = await this.todoRepository.findOne(id);
-    return await this.todoRepository.remove(todo);
+    try {
+      const todo = await this.todoRepository.findOne(id);
+      return await this.todoRepository.remove(todo); 
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 }
