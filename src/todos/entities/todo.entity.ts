@@ -9,7 +9,7 @@ export class Todo {
     @Column('simple-array',{nullable:false})
     tasks:string[];
 
-    @ManyToOne('User', (user:User) => user.tasks)
+    @ManyToOne('User', (user:User) => user)
     @JoinColumn({name:'user_id'})
     user:User
 
