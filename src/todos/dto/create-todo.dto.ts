@@ -1,9 +1,10 @@
 import { IsNotEmpty } from "class-validator";
-import { User } from "src/users/entities/user.entity";
-
+import { CreateUserDto } from "src/users/dto/create-user.dto";
 export class CreateTodoDto {
     id:string;
-    user:User;
+
+    user:CreateUserDto;
+    
     @IsNotEmpty()
     tasks:string[];
 }
