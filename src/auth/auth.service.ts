@@ -13,31 +13,42 @@ export class AuthService {
     userRepository:Repository<User>
 
     async checkExistingUser(email:string) {
-      const existingUser = await this.userRepository.findOne({email:email});
-      return existingUser;
+      try {
+        const existingUser = await this.userRepository.findOne({email:email});
+        return existingUser; 
+      } catch (error) {
+        throw new Error(error.message);
+      }
     }
-  
+
     async register(createUserDto: CreateUserDto) {
-      const existingUser = await this.checkExistingUser(createUserDto.email);
+      try {
+        const existingUser = await this.checkExistingUser(createUserDto.email);
   
-      if(existingUser) throw new BadRequestException('email id already exists');
-      const {name,email,password} = createUserDto;
-      const hashedPassword = await bcrypt.hash(password,12);
-      const user = new User();
-      user.name = name;
-      user.email = email;
-      user.password = hashedPassword;
-      user.role = Role.USER;
-      //user.superadmin = null;
-      const data:User = await this.userRepository.save(user);
-      return data;
+        if(existingUser) throw new BadRequestException('email id already exists');
+        const {name,email,password} = createUserDto;
+        const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT));
+        const user = new User();
+        user.name = name;
+        user.email = email;
+        user.password = hashedPassword;
+        user.role = Role.USER;
+        const data:User = await this.userRepository.save(user);
+        return data; 
+      } catch (error) {
+        throw new Error(error.message);
+      }
     }
   
     async login(loginUserDto:LoginUserDto) {
-      const existingUser = await this.checkExistingUser(loginUserDto.email);
-      if(!existingUser) throw new BadRequestException('Invalid credentials');
-      const matchPassword = await bcrypt.compare(loginUserDto.password,existingUser.password);
-      if(!matchPassword) throw new BadRequestException('Invalid credentials');
-      return existingUser;
+      try {
+        const existingUser = await this.checkExistingUser(loginUserDto.email);
+        if(!existingUser) throw new BadRequestException('Invalid credentials');
+        const matchPassword = await bcrypt.compare(loginUserDto.password,existingUser.password);
+        if(!matchPassword) throw new BadRequestException('Invalid credentials');
+        return existingUser; 
+      } catch (error) {
+        throw new Error(error.message);
+      }
     }
 }
