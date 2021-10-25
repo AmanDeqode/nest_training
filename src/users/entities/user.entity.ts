@@ -19,6 +19,6 @@ export class User {
     @Column({ type: 'enum', enum: Role, default: Role.USER })
     role:Role
 
-    @OneToMany('Todo',(task:Todo)=> task.user,{onDelete:'CASCADE',onUpdate:'CASCADE'})
+    @OneToMany('Todo',(tasks:Todo)=> tasks.user,{onDelete:'CASCADE',onUpdate:'CASCADE'})
     tasks:Todo[]
 }
